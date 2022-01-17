@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model client {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(50)
+  address     String     @db.VarChar(255)
+  tel         Int
+  seller_name String     @db.VarChar(50)
+  user_id     Int
+  users       users      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  salesman    salesman[]
+}
+
+model salesman {
+  id               Int      @id @default(autoincrement())
+  sales            String   @db.VarChar(20)
+  shirt_id         Int
+  count            Int
+  negotiated_price Int
+  note             String?  @db.VarChar(255)
+  given_price      Int
+  left_balance     Int
+  give_date        DateTime @db.Date
+  fon_sold         Boolean  @default(false)
+  client_id        Int
+  send_date        DateTime @db.Date
+  delivery_type    Boolean  @default(true)
+  brides_name      String?  @db.VarChar(50)
+  passport         Boolean? @default(false)
+  given_many_salon Int?
+  client           client   @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  shirt            shirt    @relation(fields: [shirt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model shirt {
+  id       Int        @id @default(autoincrement())
+  name     String     @db.VarChar(50)
+  img      String     @db.VarChar(100)
+  salesman salesman[]
+}
+
+model roles {
+  id    Int     @id @default(autoincrement())
+  role  String  @unique @db.VarChar(255)
+  users users[]
+}
+
+model users {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  name         String   @db.VarChar(255)
+  phone        String   @db.VarChar(10)
+  born_date    String?  @db.VarChar(255)
+  user_picture String?  @db.VarChar(255)
+  role_id      Int
+  roles        roles    @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  client       client[]
+}
